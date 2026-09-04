@@ -257,3 +257,70 @@ plt.savefig(
 plt.show()
 
 print("그래프 저장 완료: images/05_monthly_change_rate.png")
+
+
+# ========================================
+# 여섯 번째 그래프: 월별 vs 분기별 집계 비교
+# ========================================
+
+df["분기"] = df["날짜"].dt.to_period("Q")
+
+quarterly_total = (
+    df.groupby("분기")["방문자수"]
+    .sum()
+    .sort_index()
+)
+
+quarterly_dates = quarterly_total.index.to_timestamp()
+
+fig, axes = plt.subplots(2, 1, figsize=(12, 10), sharex=False)
+
+axes[0].plot(
+    monthly_total.index,
+    monthly_total.values,
+    label="월별 방문자수",
+    linewidth=1.5
+)
+axes[0].set_title("월별 집계: 2023~2025년 관광 방문 추세")
+axes[0].set_xlabel("기간")
+axes[0].set_ylabel("방문자 수")
+axes[0].legend()
+axes[0].grid(alpha=0.3)
+
+axes[1].plot(
+    quarterly_dates,
+    quarterly_total.values,
+    label="분기별 방문자수",
+    color="darkorange",
+    marker="o",
+    linewidth=2
+)
+axes[1].set_title("분기별 집계: 2023~2025년 관광 방문 추세")
+axes[1].set_xlabel("기간")
+axes[1].set_ylabel("방문자 수")
+axes[1].legend()
+axes[1].grid(alpha=0.3)
+
+plt.tight_layout()
+
+plt.savefig(
+    "images/06_monthly_vs_quarterly.png",
+    dpi=150
+)
+
+plt.show()
+
+print("그래프 저장 완료: images/06_monthly_vs_quarterly.png")
+
+# ========================================
+# 집계 단위별 노이즈 비교 (변동성 수치화)
+# ========================================
+
+monthly_pct_change = monthly_total.pct_change().dropna()
+monthly_volatility = monthly_pct_change.std() * 100
+
+quarterly_pct_change = quarterly_total.pct_change().dropna()
+quarterly_volatility = quarterly_pct_change.std() * 100
+
+print(f"월별 집계 변동성(표준편차): {monthly_volatility:.2f}%")
+print(f"분기별 집계 변동성(표준편차): {quarterly_volatility:.2f}%")
