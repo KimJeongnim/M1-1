@@ -20,7 +20,18 @@ monthly_past = df_past.groupby("날짜")["방문자수"].sum().sort_index()
 monthly_past.index = pd.to_datetime(monthly_past.index)
 monthly_past = monthly_past.asfreq("MS")
 
-monthly_2026_actual = df_2026.groupby("날짜")["방문자수"].sum().sort_index()
+df_2026_actual = df_2026[
+    ~(
+        (df_2026["기준년월"] == 202607)
+        & (df_2026["지역"].isin(["광주", "전남"]))
+    )
+]
+
+monthly_2026_actual = (
+    df_2026_actual.groupby("날짜")["방문자수"]
+    .sum()
+    .sort_index()
+)
 
 # 2. Holt-Winters 계절성 시계열 모델 학습 및 2026년 1~7월 예측
 model = ExponentialSmoothing(monthly_past, trend="add", seasonal="add", seasonal_periods=12).fit()
@@ -64,6 +75,6 @@ plt.legend()
 plt.grid(alpha=0.3)
 plt.tight_layout()
 
-plt.savefig("images/06_prophet_forecast.png", dpi=150)
+plt.savefig("images/06_holtwinters_forecast.png", dpi=150)
 plt.show()
-print("예측 비교 그래프 저장 완료: images/06_prophet_forecast.png")
+print("예측 비교 그래프 저장 완료: images/06_holtwinters_forecast.png")

@@ -483,7 +483,8 @@ project/
 │  ├─ 02_monthly_seasonality.png
 │  ├─ 03_region_change.png
 │  ├─ 04_main_region_trend.png
-│  └─ 05_monthly_change_rate.png
+│  ├─ 05_monthly_change_rate.png
+│  └─ 06_holtwinters_forecast.png
 │
 ├─ check_data.py
 ├─ eda.py
